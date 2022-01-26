@@ -28,12 +28,28 @@ async function run() {
     const database = client.db("travelBlog");
     const blogsCollection = database.collection("blogs");
     const usersCollection = database.collection("users");
+    const experienceCollection = database.collection("experience");
 
-    //get api
+    //get api and pagination
     app.get("/blogs", async (req, res) => {
       const cursor = blogsCollection.find({});
-      const blogs = await cursor.toArray();
-      res.send(blogs);
+      const page = req.query.page;
+      const size = parseInt(req.query.size);
+      let blogs;
+      const count = await cursor.count();
+      if (page) {
+        blogs = await cursor
+          .skip(page * size)
+          .limit(size)
+          .toArray();
+      } else {
+        blogs = await cursor.toArray();
+      }
+
+      res.send({
+        blogs,
+        count,
+      });
     });
     // load single blog get api
     app.get("/blog/:id", async (req, res) => {
@@ -42,15 +58,30 @@ async function run() {
       const products = await blogsCollection.findOne(query);
       res.json(products);
     });
+    // user my blogs
+    //cart
+    app.get("/myblog", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const carts = await blogsCollection.find(query).toArray();
 
+      res.json(carts);
+    });
+    // delete data from user my blogs
+    app.delete("/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await blogsCollection.deleteOne(query);
+      res.json(result);
+    });
     //manage all blogs
-    // get all orders
+    // get all blogs
     app.get("/allBlogs", async (req, res) => {
       const cursor = blogsCollection.find({});
       const blogs = await cursor.toArray();
       res.send(blogs);
     });
-    // delete orders
+    // delete blog
 
     app.delete("/deleteBlogs/:id", async (req, res) => {
       console.log(req.params.id);
@@ -65,7 +96,16 @@ async function run() {
       const result = await blogsCollection.insertOne(req.body);
       console.log(result);
     });
-
+    // add blog from form using dashboard user(trial)
+    app.post("/writeBlog", async (req, res) => {
+      console.log(req.body);
+      const result = await blogsCollection.insertOne(req.body);
+      console.log(result);
+    });
+    // const status = req.query.status;
+    // if (status == "Approve") {
+    //   const result = await blogsCollection.insertOne(req.body);
+    // }
     //  make admin
     app.post("/addUserInfo", async (req, res) => {
       console.log("req.body");
@@ -91,6 +131,18 @@ async function run() {
         .toArray();
       console.log(result);
       res.send(result);
+    });
+    //update
+    app.put("/userBlog/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const event = {
+        $set: {
+          status: "Approved",
+        },
+      };
+      const result = await blogsCollection.updateOne(query, event);
+      res.json(result);
     });
   } finally {
     // await client.close();
