@@ -28,11 +28,12 @@ async function run() {
     const database = client.db("travelBlog");
     const blogsCollection = database.collection("blogs");
     const usersCollection = database.collection("users");
-    const experienceCollection = database.collection("experience");
+    const commentCollection = database.collection("comment");
 
     //get api and pagination
     app.get("/blogs", async (req, res) => {
-      const cursor = blogsCollection.find({});
+      const query = { status: "Approved" };
+      const cursor = blogsCollection.find(query);
       const page = req.query.page;
       const size = parseInt(req.query.size);
       let blogs;
@@ -59,7 +60,7 @@ async function run() {
       res.json(products);
     });
     // user my blogs
-    //cart
+    //get blogs
     app.get("/myblog", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
@@ -90,6 +91,7 @@ async function run() {
       });
       res.send(result);
     });
+
     // add blog from form using dashboard admin
     app.post("/addBlog", async (req, res) => {
       console.log(req.body);
@@ -143,6 +145,27 @@ async function run() {
       };
       const result = await blogsCollection.updateOne(query, event);
       res.json(result);
+    });
+
+    //user comment
+    app.post("/comment", async (req, res) => {
+      console.log("req.body");
+      const result = await commentCollection.insertOne(req.body);
+      res.send(result);
+      console.log(result);
+    });
+    app.get("/comment/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { blogId: id };
+      const products = await commentCollection.find(query).toArray();
+      res.json(products);
+    });
+    // delete comment api
+    app.delete("/comment/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await commentCollection.deleteOne(query);
+      res.send(result);
     });
   } finally {
     // await client.close();
