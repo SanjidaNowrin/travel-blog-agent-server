@@ -52,6 +52,7 @@ async function run() {
         count,
       });
     });
+
     // load single blog get api
     app.get("/blog/:id", async (req, res) => {
       const id = req.params.id;
