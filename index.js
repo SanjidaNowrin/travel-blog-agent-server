@@ -7,13 +7,13 @@ const cors = require("cors");
 require("dotenv").config();
 
 const { MongoClient } = require("mongodb");
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
 //middleware
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uj11r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = process.env.MONGO_URI;
 
 console.log(uri);
 
