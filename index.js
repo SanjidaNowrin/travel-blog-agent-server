@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.uj11r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.AWS_REGION}:${process.env.AWS_ACCESS_KEY_ID}@cluster0.uj11r.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
 console.log(uri);
 
