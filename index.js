@@ -13,7 +13,7 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.MONGO_URI;
+const uri = `mongodb+srv://travelBlog:vZNmp0nWCrGuBUfj@cluster0.uj11r.mongodb.net/test`;
 
 console.log(uri);
 
