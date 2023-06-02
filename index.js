@@ -10,11 +10,7 @@ const { MongoClient } = require("mongodb");
 const port = process.env.PORT || 3000;
 
 //middleware
-app.use(
-  cors({
-    origin: "https://travel-agent-blog.web.app/", // Replace with your Firebase Hosting domain
-  })
-);
+app.use(cors());
 app.use(express.json());
 
 const uri = process.env.MONGO_URI;
